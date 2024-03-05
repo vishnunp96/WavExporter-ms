@@ -13,7 +13,7 @@ local_midi = 'output.mid'
 
 @app.route('/', methods=['POST'])
 def convert_midi_to_wav():
-    blob_in = request.args.get('midi')
+    blob_in = request.get_json().get('midi')
     if not blob_in:
         app.logger.warning('Conversion request received with no \'midi\' field.')
         return 'Error', 500
