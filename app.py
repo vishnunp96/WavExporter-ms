@@ -18,8 +18,7 @@ def convert_midi_to_wav():
         app.logger.warning('Conversion request received with no \'midi\' field.')
         return 'Error', 500
 
-    # toDo: name generator
-    blob_out = 'wav_out.wav'
+    blob_out = blob_in.strip('.mid') + '.wav'
     app.logger.info('Converting MIDI:' + blob_in + ' to WAV:' + blob_out)
     try:
         azureStorage.download(local_midi, blob_in)
