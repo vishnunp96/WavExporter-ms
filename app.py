@@ -6,7 +6,7 @@ from storage import azureStorage
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
-soundfont = 'GeneralUserGS.sf2'
+soundfont_default = 'GeneralUserGS.sf2'
 tempfile = 'temp_wav.wav'
 local_midi = 'output.mid'
 
@@ -22,9 +22,10 @@ def convert_midi_to_wav():
     app.logger.info('Converting MIDI:' + blob_in + ' to WAV:' + blob_out)
     try:
         azureStorage.download(local_midi, blob_in)
-        midi_to_wav(local_midi, soundfont, tempfile)
+        midi_to_wav(local_midi, soundfont_default, tempfile)
         azureStorage.upload(tempfile, blob_out)
 
+        azureStorage.delete(blob_in)
         os.remove(tempfile)
         os.remove(local_midi)
     except Exception as e:
