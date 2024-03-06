@@ -22,3 +22,9 @@ def download(local_path, blob_name):
     with open(local_path, "wb") as download_file:
         download_file.write(container_client.get_blob_client(
             blob_name).download_blob().readall())
+
+def delete(blob_name):
+    blob_client = container_client.get_blob_client(blob_name)
+    if blob_client.exists():
+        blob_client.delete_blob()
+
