@@ -13,15 +13,18 @@ local_midi = 'output.mid'
 
 @app.route('/', methods=['POST'])
 def convert_midi_to_wav():
+    app.logger.info('Conversion request received to convert midi to wav: '
+                    + str(request.get_json()))
     blob_in = request.get_json().get('midi')
     if not blob_in:
-        app.logger.warning('Conversion request received with no \'midi\' field.')
-        return 'Error', 500
+        app.logger.warning('Conversion request received with ' +
+                           'no \'midi\' field.')
+        return 'Error: Conversion request received with no \'midi\' field.', 422
 
     blob_out = blob_in.strip('.mid') + '.wav'
-    app.logger.info('Converting MIDI:' + blob_in + ' to WAV:' + blob_out)
     try:
         azureStorage.download(local_midi, blob_in)
+        app.logger.info('Download successful of blob:' + str(blob_in))
         midi_to_wav(local_midi, soundfont_default, tempfile)
         azureStorage.upload(tempfile, blob_out)
 
@@ -30,7 +33,8 @@ def convert_midi_to_wav():
         os.remove(local_midi)
     except Exception as e:
         app.logger.error(e)
-        return 'error', 500
+        return ('Error: Unexpected error occurred in the conversion process.',
+                500)
     return blob_out, 201
 
 
